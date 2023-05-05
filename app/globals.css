@@ -47,3 +47,10 @@ body,
 .slick-prev:before, .slick-next:before {
   display: none !important;
 }
+
+@media (max-width: 412px) {
+  .slick-next,
+  .slick-prev {
+    display: none !important;
+  }
+}
