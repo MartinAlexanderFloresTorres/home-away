@@ -1,36 +1,32 @@
-'use client';
+'use client'
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
-import { format } from 'date-fns';
-import { es } from "date-fns/esm/locale";
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useCallback, useMemo } from 'react'
+import { format } from 'date-fns'
+import { es } from 'date-fns/esm/locale'
 
-import useCountries from "@/app/hooks/useCountries";
-import { 
-  SafeListing, 
-  SafeReservation, 
-  SafeUser 
-} from "@/app/types";
+import useCountries from '@/app/hooks/useCountries'
+import { SafeListing, SafeReservation, SafeUser } from '@/app/types'
 
-import HeartButton from "../HeartButton";
-import Button from "../Button";
+import HeartButton from '../HeartButton'
+import Button from '../Button'
 
 const currencyFormat = {
   style: 'currency',
-  currency: 'MXN',
-  minimumFractionDigits: 2,
-};
+  currency: 'PEN',
+  minimumFractionDigits: 2
+}
 
 interface ListingCardProps {
-  data: SafeListing;
-  reservation?: SafeReservation;
-  onAction?: (id: string) => void;
-  disabled?: boolean;
-  actionLabel?: string;
-  actionId?: string;
+  data: SafeListing
+  reservation?: SafeReservation
+  onAction?: (id: string) => void
+  disabled?: boolean
+  actionLabel?: string
+  actionId?: string
   currentUser?: SafeUser | null
-};
+}
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
@@ -39,88 +35,76 @@ const ListingCard: React.FC<ListingCardProps> = ({
   disabled,
   actionLabel,
   actionId = '',
-  currentUser,
+  currentUser
 }) => {
-  const router = useRouter();
-  const { getByValue } = useCountries();
+  const router = useRouter()
+  const { getByValue } = useCountries()
 
-  const location = getByValue(data.locationValue);
+  const location = getByValue(data.locationValue)
 
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+      e.stopPropagation()
 
-    if (disabled) {
-      return;
-    }
+      if (disabled) {
+        return
+      }
 
-    onAction?.(actionId)
-  }, [disabled, onAction, actionId]);
+      onAction?.(actionId)
+    },
+    [disabled, onAction, actionId]
+  )
 
   const price = useMemo(() => {
     if (reservation) {
-      return reservation.totalPrice;
+      return reservation.totalPrice
     }
 
-    return data.price;
-  }, [reservation, data.price]);
+    return data.price
+  }, [reservation, data.price])
 
   const reservationDate = useMemo(() => {
     if (!reservation) {
-      return null;
+      return null
     }
-  
-    const start = new Date(reservation.startDate);
-    const end = new Date(reservation.endDate);
 
-    return `${format(start, 'PP', {locale: es})} - ${format(end, 'PP', {locale: es})}`;
-  }, [reservation]);
+    const start = new Date(reservation.startDate)
+    const end = new Date(reservation.endDate)
+
+    return `${format(start, 'PP', { locale: es })} - ${format(end, 'PP', { locale: es })}`
+  }, [reservation])
 
   return (
-    <div 
-      onClick={() => router.push(`/listados/${data.id}`)} 
-      className="col-span-1 cursor-pointer group"
+    <div
+      onClick={() => router.push(`/listados/${data.id}`)}
+      className='col-span-1 cursor-pointer group'
     >
-      <div className="flex flex-col gap-2 w-full">
-        <div className="aspect-square w-full relative overflow-hidden rounded-xl">
+      <div className='flex flex-col gap-2 w-full'>
+        <div className='aspect-square w-full relative overflow-hidden rounded-xl'>
           <Image
             fill
-            className="object-cover h-full w-full group-hover:scale-110 transition"
+            className='object-cover h-full w-full group-hover:scale-110 transition'
             src={data.imageSrc}
-            alt="Listing"
+            alt='Listing'
           />
-          <div className="absolute top-3 right-3">
-            <HeartButton 
-              listingId={data.id} 
-              currentUser={currentUser}
-            />
+          <div className='absolute top-3 right-3'>
+            <HeartButton listingId={data.id} currentUser={currentUser} />
           </div>
         </div>
-        <div className="font-semibold text-lg">
+        <div className='font-semibold text-lg'>
           {location?.region}, {location?.label}
         </div>
-        <div className="font-light text-neutral-500">
-          {reservationDate || data.category}
-        </div>
-        <div className="flex flex-row items-center gap-1">
-          <div className="font-semibold">
-            {price.toLocaleString("es-MX", currencyFormat)} MXN
-          </div>
-          {!reservation && (
-            <div className="font-light">noche</div>
-          )}
+        <div className='font-light text-neutral-500'>{reservationDate || data.category}</div>
+        <div className='flex flex-row items-center gap-1'>
+          <div className='font-semibold'>{price.toLocaleString('es-PE', currencyFormat)} PEN</div>
+          {!reservation && <div className='font-light'>noche</div>}
         </div>
         {onAction && actionLabel && (
-          <Button
-            disabled={disabled}
-            small
-            label={actionLabel} 
-            onClick={handleCancel}
-          />
+          <Button disabled={disabled} small label={actionLabel} onClick={handleCancel} />
         )}
       </div>
     </div>
-   );
+  )
 }
- 
-export default ListingCard;
+
+export default ListingCard
